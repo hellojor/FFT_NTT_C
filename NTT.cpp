@@ -5,8 +5,8 @@
  * This progrom wanna to show the NTT and INTT algorithm
  *
  * 
- * Using "g++ FFT_org.cpp -o FFT_org.out" to compile the cpp file
- * and using "./FFT_org.out" to run the program
+ * Using "g++ NTT_org.cpp -o NTT_org.out" to compile the cpp file
+ * and using "./NTT_org.out" to run the program
  *
  * History
  * 2023/05/10	jorjor	First release
@@ -212,13 +212,11 @@ int main(){
 			}
 		}
 	}
+
+	int rv = quickmod(n, q - 2);
 	for (int i = 0; i < n; i++) {
-		//x1_intt[i] /= n;
-		//x2_intt[i] /= n;
-		for (int j = 0; j < log2(n); j++) {
-			DIV2(&x1_intt[i]);
-			DIV2(&x2_intt[i]);
-		}
+		x1_intt[i] = (x1_intt[i] * rv) % q;
+		x2_intt[i] = (x2_intt[i] * rv) % q;
 	}
 
     cout << "***** After INTT *****" << endl;

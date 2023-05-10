@@ -179,14 +179,44 @@ int main(){
     cout << "x1_ntt: "; print(x1_ntt, n);
     cout << "x2_ntt: "; print(x2_ntt, n); cout << endl;
 
-	
-	/*for (int i = 0; i < n; i++) {
+	int *X_multi = new int[n];
 
+	for (int i = 0; i < n; i++) {
+		X_multi[i] = (x1_ntt[i] * x2_ntt[i]) % q;
 	}
-    cout << "***** Convolution *****" << endl;*/
+    cout << "***** Convolution *****" << endl;
+    cout << "X_multi: "; print(X_multi, n); cout << endl;
+	
+	int *X_intt = new int[n];
+	
+	// reverse 
+	for (int i = 0; i < n; i++) {
+		X_intt[i] = X_multi[bitreverse(i, log2(n))];
+	}
+
+
+	// INTT
+	for (int step = 1; step <= log2(n); step++) {
+		cout << step << endl;
+		for (int idx = 0; idx < (n/pow(2, step)); idx++) {
+			for (int distance = 0; distance < pow(2, step - 1); distance++) {
+				int i = idx * pow(2, step) + distance;
+				int j = idx * pow(2, step) + distance + pow(2, step - 1);
+				BFU_CT(X_intt, i, j, wn_inv[distance * int(n/pow(2, step))]);
+			}
+		}
+	}
+
+	int rv = quickmod(n, q - 2);
+	for (int i = 0; i < n; i++) {
+		X_intt[i] = (X_intt[i] * rv) % q;
+	}
+
+    cout << "***** After INTT *****" << endl;
+    cout << "X_intt: "; print(X_intt, n); cout << endl;
 	
 
-# if 1
+# if 0
 	
 	int *x1_intt = new int[n];
 	int *x2_intt = new int[n];
@@ -223,7 +253,13 @@ int main(){
     cout << "x1_intt: "; print(x1_intt, n);
     cout << "x2_intt: "; print(x2_intt, n); cout << endl;
 
+	delete x1_intt;
+	delete x2_intt;
 #endif
-
+	
+	delete x1_ntt;
+	delete x2_ntt;
+	delete X_multi;
+	delete X_intt;
 	return 0;
 }

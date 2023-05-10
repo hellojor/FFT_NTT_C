@@ -105,6 +105,17 @@ void BFU_CT(int *arr, int i, int j, int wn) {
 	arr[j] = (arr[j] < 0) ? arr[j] + q : arr[j];
 }
 
+void naive_polynomial_multiplication(int *x1, int *x2, int *arr, int n) {
+	for (int i = 0; i < n; i++) {
+		arr[i] = 0;
+	}
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			arr[(i+j)%n] = (arr[(i+j)%n] + (x1[i] * x2[j])) % q;
+		}
+	}
+}	
+
 int main(){
 
 	// set seed to 0
@@ -215,6 +226,11 @@ int main(){
     cout << "***** After INTT *****" << endl;
     cout << "X_intt: "; print(X_intt, n); cout << endl;
 	
+	int *naive_result = new int[n];
+	naive_polynomial_multiplication(x1, x2, naive_result, n);
+
+    cout << "***** Naive polynomial multiplication *****" << endl;
+    cout << "naive_result: "; print(naive_result, n); cout << endl;
 
 # if 0
 	
@@ -243,7 +259,7 @@ int main(){
 		}
 	}
 
-	int rv = quickmod(n, q - 2);
+	rv = quickmod(n, q - 2);
 	for (int i = 0; i < n; i++) {
 		x1_intt[i] = (x1_intt[i] * rv) % q;
 		x2_intt[i] = (x2_intt[i] * rv) % q;
@@ -261,5 +277,7 @@ int main(){
 	delete x2_ntt;
 	delete X_multi;
 	delete X_intt;
+	delete naive_result;
+
 	return 0;
 }

@@ -149,9 +149,6 @@ int main(){
 		wn[i] = (wn[i-1] * w) % q;
 	}
 
-    cout << "***** Wn array *****" << endl;
-    cout << "wn: "; print(wn, n); cout << endl;
-	
 	// build the array of w
 	int *wn_inv = new int[n];
 	wn_inv[0] = 1;
@@ -159,6 +156,8 @@ int main(){
 		wn_inv[i] = (wn_inv[i-1] * winv) % q;
 	}
     
+    cout << "***** Wn array *****" << endl;
+    cout << "wn: "; print(wn, n);
 	cout << "***** Wn_inv array *****" << endl;
     cout << "wn_inv: "; print(wn_inv, n); cout << endl;
 	
@@ -173,15 +172,12 @@ int main(){
 	
 	// NTT
 	for (int step = 1; step <= log2(n); step++) {
-		cout << step << endl;
 		for (int idx = 0; idx < (n/pow(2, step)); idx++) {
 			for (int distance = 0; distance < pow(2, step - 1); distance++) {
 				int i = idx * pow(2, step) + distance;
 				int j = idx * pow(2, step) + distance + pow(2, step - 1);
 				BFU_CT(x1_ntt, i, j, wn[distance * int(n/pow(2, step))]);
 				BFU_CT(x2_ntt, i, j, wn[distance * int(n/pow(2, step))]);
-				//BFU_CT(x1_ntt, i, j, wn[distance]);
-				//BFU_CT(x2_ntt, i, j, wn[distance]);
 			}
 		}
 	}
@@ -208,7 +204,6 @@ int main(){
 
 	// INTT
 	for (int step = 1; step <= log2(n); step++) {
-		cout << step << endl;
 		for (int idx = 0; idx < (n/pow(2, step)); idx++) {
 			for (int distance = 0; distance < pow(2, step - 1); distance++) {
 				int i = idx * pow(2, step) + distance;

@@ -3,7 +3,7 @@
  *
  * Description
  * This progrom wanna to show the FFT and IFFT algorithm
- * Using DIF-FFT (Centleman-Sande) and DIT-FFT (Cooley-Tukey) to implement FFT and IFFT respectively
+ * Using DIF-FFT (Gentleman-Sande) and DIT-FFT (Cooley-Tukey) to implement FFT and IFFT respectively
  *
  * 
  * Using "g++ FFT_GSCT.cpp -o FFT_CST.out" to compile the cpp file

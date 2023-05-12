@@ -1,15 +1,16 @@
 /*
- * NNT_org.cpp
+ * NNT_GSCT.cpp
  *
  * Description
  * This progrom wanna to show the NTT and INTT algorithm
- *
+ * using DIF (Gentleman-Sande) and DIT (Cooley-Tukey) to implement NTT and INTT respectively
+ * without preprocessing (bir reverse)
  * 
- * Using "g++ NTT_org.cpp -o NTT_org.out" to compile the cpp file
- * and using "./NTT_org.out" to run the program
+ * Using "g++ NTT_GSCT.cpp -o NTT_GSCT.out" to compile the cpp file
+ * and using "./NTT_GSCT.out" to run the program
  *
  * History
- * 2023/05/10	jorjor	First release
+ * 2023/05/11	jorjor	First release
  * */
 
 #include <iostream>
@@ -105,6 +106,18 @@ void BFU_CT(int *arr, int i, int j, int wn) {
 	arr[j] = (arr[j] < 0) ? arr[j] + q : arr[j];
 }
 
+void BFU_GS(int *arr, int i, int j, int wn) {
+	// DIF-FFT
+	// Gentleman Sande algorithm
+	int temp1 = arr[i];
+	int temp2 = arr[j];
+	arr[i] = (temp1 + temp2) % q;
+	arr[j] = ((temp1 - temp2) * wn) % q;
+
+	arr[i] = (arr[i] < 0) ? arr[i] + q : arr[i];
+	arr[j] = (arr[j] < 0) ? arr[j] + q : arr[j];
+}
+
 void naive_polynomial_multiplication(int *x1, int *x2, int *arr, int n) {
 	for (int i = 0; i < n; i++) {
 		arr[i] = 0;
@@ -164,20 +177,18 @@ int main(){
 	int *x1_ntt = new int[n];
 	int *x2_ntt = new int[n];
 
-	// reverse
-	for(int i = 0; i < n; i++) {
-		x1_ntt[i] = x1[bitreverse(i, log2(n))];
-		x2_ntt[i] = x2[bitreverse(i, log2(n))];
+	for (int i = 0; i < n; i++) {
+		x1_ntt[i] = x1[i];
+		x2_ntt[i] = x2[i];
 	}
-	
 	// NTT
-	for (int step = 1; step <= log2(n); step++) {
+	for (int step = log2(n); step >= 1; step--) {
 		for (int idx = 0; idx < (n/pow(2, step)); idx++) {
 			for (int distance = 0; distance < pow(2, step - 1); distance++) {
 				int i = idx * pow(2, step) + distance;
 				int j = idx * pow(2, step) + distance + pow(2, step - 1);
-				BFU_CT(x1_ntt, i, j, wn[distance * int(n/pow(2, step))]);
-				BFU_CT(x2_ntt, i, j, wn[distance * int(n/pow(2, step))]);
+				BFU_GS(x1_ntt, i, j, wn[distance * int(n/pow(2, step))]);
+				BFU_GS(x2_ntt, i, j, wn[distance * int(n/pow(2, step))]);
 			}
 		}
 	}
@@ -196,9 +207,8 @@ int main(){
 	
 	int *X_intt = new int[n];
 	
-	// reverse 
 	for (int i = 0; i < n; i++) {
-		X_intt[i] = X_multi[bitreverse(i, log2(n))];
+		X_intt[i] = X_multi[i];
 	}
 
 
@@ -234,22 +244,19 @@ int main(){
 
 	// reverse
 	for(int i = 0; i < n; i++) {
-		x1_intt[i] = x1_ntt[bitreverse(i, log2(n))];
-		x2_intt[i] = x2_ntt[bitreverse(i, log2(n))];
+		x1_intt[i] = x1_ntt[i];
+		x2_intt[i] = x2_ntt[i];
 	}
 
 
 	// INTT
 	for (int step = 1; step <= log2(n); step++) {
-		cout << step << endl;
 		for (int idx = 0; idx < (n/pow(2, step)); idx++) {
 			for (int distance = 0; distance < pow(2, step - 1); distance++) {
 				int i = idx * pow(2, step) + distance;
 				int j = idx * pow(2, step) + distance + pow(2, step - 1);
 				BFU_CT(x1_intt, i, j, wn_inv[distance * int(n/pow(2, step))]);
 				BFU_CT(x2_intt, i, j, wn_inv[distance * int(n/pow(2, step))]);
-				//BFU_CT(x1_intt, i, j, wn_inv[distance]);
-				//BFU_CT(x2_intt, i, j, wn_inv[distance]);
 			}
 		}
 	}
